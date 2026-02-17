@@ -59,10 +59,13 @@ def post(endpoint: str, json_data: dict | None = None):
 
 # ─── Header ──────────────────────────────────────────────────────────
 # ─── Header ──────────────────────────────────────────────────────────
+# ─── Header (Standardized) ──────────────────────────────────────────
 st.markdown("""
-<div class="iaudit-header">
-<h1 style="color: #60a5fa; margin: 0; font-size: 1.8rem;">Detalhes da Empresa</h1>
-<p style="color: #94a3b8; margin: 0.3rem 0 0 0;">Histórico e configuração individualizada</p>
+<div class="brand-header">
+    <div style="z-index: 1;">
+        <div class="brand-title-large" style="font-size: 2.5rem;">Detalhes da Empresa</div>
+        <div class="brand-subtitle-large">Histórico, CNDs e Monitoramento Individual</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -130,8 +133,8 @@ with tab_resumo:
     c1, c2 = st.columns(2)
 
     with c1:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("#### Dados Cadastrais")
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">Dados Cadastrais</div>', unsafe_allow_html=True)
         
         # Helper to format table rows
         def row(label, value):
@@ -150,8 +153,8 @@ with tab_resumo:
         st.markdown('</div>', unsafe_allow_html=True)
 
     with c2:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("#### Agendamento")
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">Agendamento</div>', unsafe_allow_html=True)
         period_labels = {
             "diario": "Diário",
             "semanal": "Semanal",
