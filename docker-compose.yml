@@ -2,31 +2,25 @@ version: "3.8"
 
 services:
   backend:
-    # O Swarm precisa de uma IMAGEM pronta. 
-    # Como não temos uma, vamos tentar forçar o build localmente ou você precisará criar uma imagem no DockerHub.
-    # Por enquanto, mantivemos a estrutura, mas removemos as linhas proibidas.
-    image: laudit-backend:latest 
+    image: laudit-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    # REMOVIDO: env_file (não existe o arquivo)
-    # REMOVIDO: container_name (o Swarm não aceita nomes fixos)
     volumes:
       - credentials_data:/app/credentials
     deploy:
       restart_policy:
         condition: on-failure
 
- context: ./front-end
+  frontend:
     image: laudit-frontend:latest
     build:
       context: ./front-end
       dockerfile: Dockerfile
     ports:
       - "8501:8501"
-    # REMOVIDO: container_name
     environment:
       - BACKEND_URL=http://backend:8000
     depends_on:
@@ -34,5 +28,6 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        volumes:
-          credentials_data:
+
+volumes:
+  credentials_data:
