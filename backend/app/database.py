@@ -17,9 +17,35 @@ _client: Client | None = None
 DEMO_MODE = False  # Will be set to True if Supabase fails
 
 # Global in-memory storage for DEMO_MODE
-DEMO_EMPRESAS = []
+DEMO_EMPRESAS = [
+    {"id": "c1", "cnpj": "12.345.678/0001-90", "razao_social": "Tech Solutions Ltda", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c2", "cnpj": "98.765.432/0001-10", "razao_social": "Comércio Silva & Filhos", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c3", "cnpj": "11.222.333/0001-44", "razao_social": "Indústria Beta S.A.", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c4", "cnpj": "44.555.666/0001-77", "razao_social": "Transportes Rápidos Express", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c5", "cnpj": "77.888.999/0001-22", "razao_social": "Consultoria Alpha Global", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c6", "cnpj": "55.444.333/0001-11", "razao_social": "Mercado Legal Supermercados", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c7", "cnpj": "22.333.444/0001-55", "razao_social": "Construtora Segura Engenharia", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c8", "cnpj": "99.888.777/0001-33", "razao_social": "Restaurante Sabor Caseiro", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c9", "cnpj": "66.777.888/0001-99", "razao_social": "Escola Futuro do Saber", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+    {"id": "c10", "cnpj": "33.222.111/0001-00", "razao_social": "Clinica Saúde e Bem-Estar", "ativo": True, "created_at": datetime.now(timezone.utc).isoformat()},
+]
 
-DEMO_CONSULTAS = []
+DEMO_CONSULTAS = [
+    # Irregular (c2)
+    {"id": "alert1", "empresa_id": "c2", "tipo": "fgts_regularidade", "status": "concluida", "situacao": "irregular", "data_execucao": datetime.now(timezone.utc).isoformat(), "mensagem": "Débito FGTS detectado"},
+    # Irregular (c4)
+    {"id": "alert2", "empresa_id": "c4", "tipo": "cnd_federal", "status": "concluida", "situacao": "negativa", "data_execucao": datetime.now(timezone.utc).isoformat(), "mensagem": "Pendência Receita Federal"},
+    # Irregular (c7)
+    {"id": "alert3", "empresa_id": "c7", "tipo": "cnd_estadual", "status": "concluida", "situacao": "irregular", "data_execucao": datetime.now(timezone.utc).isoformat(), "mensagem": "Inscrição Estadual suspensa"},
+    # Regular (others)
+    {"id": "ok1", "empresa_id": "c1", "tipo": "cnd_federal", "status": "concluida", "situacao": "regular", "data_execucao": datetime.now(timezone.utc).isoformat()},
+    {"id": "ok2", "empresa_id": "c3", "tipo": "cnd_federal", "status": "concluida", "situacao": "regular", "data_execucao": datetime.now(timezone.utc).isoformat()},
+    {"id": "ok3", "empresa_id": "c5", "tipo": "cnd_federal", "status": "concluida", "situacao": "regular", "data_execucao": datetime.now(timezone.utc).isoformat()},
+    {"id": "ok4", "empresa_id": "c6", "tipo": "cnd_federal", "status": "concluida", "situacao": "regular", "data_execucao": datetime.now(timezone.utc).isoformat()},
+    {"id": "ok5", "empresa_id": "c8", "tipo": "cnd_federal", "status": "concluida", "situacao": "regular", "data_execucao": datetime.now(timezone.utc).isoformat()},
+    {"id": "ok6", "empresa_id": "c9", "tipo": "cnd_federal", "status": "concluida", "situacao": "regular", "data_execucao": datetime.now(timezone.utc).isoformat()},
+    {"id": "ok7", "empresa_id": "c10", "tipo": "cnd_federal", "status": "concluida", "situacao": "regular", "data_execucao": datetime.now(timezone.utc).isoformat()},
+]
 
 
 def get_supabase() -> Client | None:

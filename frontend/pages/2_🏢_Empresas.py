@@ -198,14 +198,14 @@ with st.sidebar:
 st.markdown("""
 <div class="iaudit-header">
 <h1 class="empresas-title">
-<span class="icon-float">🏢</span> Consulta de Empresas
+Consulta de Empresas
 </h1>
 <p>Busque qualquer CNPJ ou gerencie empresas cadastradas</p>
 </div>
 """, unsafe_allow_html=True)
 
 # ─── CNPJ Lookup (Main Feature) ──────────────────────────────────────
-st.markdown("### 🔍 Consultar Qualquer CNPJ")
+st.markdown("### Consultar Qualquer CNPJ")
 st.markdown("<p style='color: #94a3b8; margin-bottom: 1.5rem;'>Digite um CNPJ para consultar informações da Receita Federal</p>", unsafe_allow_html=True)
 
 

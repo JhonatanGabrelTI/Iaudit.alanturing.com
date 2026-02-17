@@ -102,17 +102,9 @@ st.markdown("""
 <div class="brand-header">
     <div style="position: relative;">
         <div style="position: absolute; inset: -10px; background: radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(0,0,0,0) 70%); filter: blur(20px); z-index: 0;"></div>
-        <svg class="brand-logo-large" style="position: relative; z-index: 1;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-             <defs>
-                <linearGradient id="logoGradient2" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#60A5FA"/>
-                    <stop offset="50%" stop-color="#8B5CF6"/>
-                    <stop offset="100%" stop-color="#EC4899"/>
-                </linearGradient>
-            </defs>
-            <path d="M12 2L3 7V12C3 17.52 7.03 22 12 22C16.97 22 21 17.52 21 12V7L12 2Z" fill="url(#logoGradient2)" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
-            <path d="M9 12L11 14L15 10" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));"/>
-        </svg>
+       <div style="position: absolute; inset: -10px; background: radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(0,0,0,0) 70%); filter: blur(20px); z-index: 0;"></div>
+        <!-- Logo removed for clean design -->
+        <div style="height: 60px;"></div>
     </div>
     <div style="z-index: 1;">
         <div class="brand-title-large" style="text-shadow: 0 0 40px rgba(59, 130, 246, 0.4);">IAudit <span style="font-weight:300; opacity:0.9; color: #e2e8f0;">Intelligence</span></div>
@@ -148,17 +140,17 @@ if regulares_count < 0: regulares_count = 0 # Safety net
 st.markdown(f"""
 <div class="kpi-container">
 <div class="kpi-card kpi-success">
-<div class="kpi-title">✅ Empresas Regulares</div>
+<div class="kpi-title">Empresas Regulares</div>
 <div class="kpi-value">{regulares_count}</div>
 <div style="font-size: 0.8rem; color: #4ade80; margin-top: 5px;">Situação Fiscal em Dia</div>
 </div>
 <div class="kpi-card kpi-warning">
-<div class="kpi-title">⏳ Pendentes / Em Análise</div>
+<div class="kpi-title">Pendentes / Em Análise</div>
 <div class="kpi-value">{pendentes_count}</div>
 <div style="font-size: 0.8rem; color: #fbbf24; margin-top: 5px;">Aguardando Retorno</div>
 </div>
 <div class="kpi-card kpi-danger">
-<div class="kpi-title">🚨 Com Irregularidades</div>
+<div class="kpi-title">Com Irregularidades</div>
 <div class="kpi-value">{irregulares_count}</div>
 <div style="font-size: 0.8rem; color: #f87171; margin-top: 5px;">Ação Necessária</div>
 </div>
@@ -185,7 +177,7 @@ bento_html = f"""
 
 <div class="bento-item" style="border-color: {'#ef4444' if alertas > 0 else 'rgba(255,255,255,0.1)'};">
 
-<div class="bento-title">🚨 Alertas Críticos</div>
+<div class="bento-title">Alertas Críticos</div>
 
 <div class="bento-value" style="color: {'#ef4444' if alertas > 0 else '#fff'}">{alertas}</div>
 
@@ -197,7 +189,7 @@ bento_html = f"""
 
 <div class="bento-item">
 
-<div class="bento-title">🎯 Taxa de Sucesso</div>
+<div class="bento-title">Taxa de Sucesso</div>
 
 <div class="bento-value" style="background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{taxa}%</div>
 
@@ -207,7 +199,7 @@ bento_html = f"""
 
 <div class="bento-item" style="grid-column: span 2;">
 
-<div class="bento-title">⚡ Consultas Hoje (Real-time)</div>
+<div class="bento-title">Consultas Hoje (Real-time)</div>
 
 <div class="bento-value">{consultas}</div>
 
@@ -237,7 +229,7 @@ c1, c2 = st.columns([2, 1], gap="large")
 
 with c1:
 
-    st.markdown('<h3 style="margin-bottom: 1.5rem;">📈 Performance Analítica</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="margin-bottom: 1.5rem;">Performance Analítica</h3>', unsafe_allow_html=True)
 
     chart_data = fetch("/api/dashboard/chart", {"dias": 7})
 
@@ -311,9 +303,9 @@ with c2:
 
 # ─── COMPANY STATUS SECTION ──────────────────────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
-st.markdown('<h3>📋 Situação das Empresas</h3>', unsafe_allow_html=True)
+st.markdown('<h3>Situação das Empresas</h3>', unsafe_allow_html=True)
 
-tab1, tab2 = st.tabs(["🚨 Pendências Fiscais", "⏳ Fila de Processamento"])
+tab1, tab2 = st.tabs(["Pendências Fiscais", "Fila de Processamento"])
 
 with tab1:
     alerts = fetch("/api/dashboard/alerts", {"limite": 50})
@@ -341,7 +333,7 @@ with tab1:
         table_html += '</tbody></table>'
         st.markdown(table_html, unsafe_allow_html=True)
     else:
-        st.info("✅ Nenhuma pendência fiscal crítica encontrada.")
+        st.info("Nenhuma pendência fiscal crítica encontrada.")
 
 with tab2:
     upcoming = fetch("/api/dashboard/upcoming", {"limite": 20})
@@ -360,7 +352,7 @@ with tab2:
             try:
                 dt = data_agendada.split('T')[0]
                 hr = data_agendada.split('T')[1][:5]
-                data_fmt = f"{dt}	🕒 {hr}"
+                data_fmt = f"{dt} {hr}"
             except:
                 data_fmt = data_agendada
 
@@ -375,7 +367,7 @@ with tab2:
         table_html += '</tbody></table>'
         st.markdown(table_html, unsafe_allow_html=True)
     else:
-        st.info("💤 Nenhuma consulta agendada para breve.")
+        st.info("Nenhuma consulta agendada para breve.")
 
 
 
@@ -385,7 +377,7 @@ st.markdown("<br><hr style='border-color: rgba(255,255,255,0.05);'><br>", unsafe
 
 cols = st.columns([1, 10, 1])
 
-if cols[2].button("↻ Refresh"):
+if cols[2].button("Refresh"):
 
     st.rerun()
 
@@ -396,7 +388,7 @@ if cols[2].button("↻ Refresh"):
 import pandas as pd
 if 'red_flags' in st.session_state and st.session_state['red_flags']:
     st.markdown('<br>', unsafe_allow_html=True)
-    st.markdown('<h3>🚩 Monitoramento de Riscos (Empresas Irregulares)</h3>', unsafe_allow_html=True)
+    st.markdown('<h3>Monitoramento de Riscos (Empresas Irregulares)</h3>', unsafe_allow_html=True)
     st.info('Estas empresas foram identificadas como irregulares durante o processo de Importação em Lote.')
     
     red_flags = st.session_state['red_flags']
