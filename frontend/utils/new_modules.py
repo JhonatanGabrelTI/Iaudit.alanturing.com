@@ -33,7 +33,7 @@ def fetch_company_data_independent(cnpj: str):
         # Based on previous context, we might use a direct search endpoint
         
         # NOTE: Using a specific endpoint for data retrieval
-        response = httpx.get(f"{BACKEND_URL}/api/query/cnpj/{cnpj}", timeout=10.0)
+        response = httpx.get(f"{BACKEND_URL}/api/query/cnpj/{cnpj}", timeout=30.0)
         
         if response.status_code == 200:
             return response.json()
