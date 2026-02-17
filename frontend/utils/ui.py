@@ -39,7 +39,7 @@ def load_css():
             except:
                 pass
 
-        # Inject Global Fixed Logo (Top-Right)
+        # Inject Global Fixed Logo (Top-Left)
         st.markdown("""
         <div class="fixed-top-logo">
             <svg class="fixed-logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

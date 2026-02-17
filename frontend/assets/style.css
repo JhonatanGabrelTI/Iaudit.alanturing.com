@@ -37,8 +37,9 @@
 /* ─── GLOBAL FIXED LOGO ────────────────────────────────────────────── */
 .fixed-top-logo {
     position: fixed;
-    top: 20px;
-    right: 30px;
+    top: 15px;
+    left: 20rem;
+    /* Adjusted to clear expanded sidebar */
     z-index: 999999;
     pointer-events: none;
     /* Allow clicking through if needed, but the user wants it visible */
