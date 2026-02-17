@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from utils.ui import setup_page
 setup_page(title="IAudit — Automação Fiscal", icon="🔍")
 
@@ -16,8 +17,12 @@ with st.sidebar:
     - 🔍 **Detalhes**
     """)
     st.markdown("---")
+    
+    # Get domain from environment variable, default to alanturing.com
+    domain_name = os.getenv("DOMAIN_NAME", "iaudit.alanturing.com")
+    
     st.markdown(
-        "<small style='color:#64748b'>v1.0.0 • iaudit.allanturing.com</small>",
+        f"<small style='color:#64748b'>v1.0.0 • {domain_name}</small>",
         unsafe_allow_html=True,
     )
 

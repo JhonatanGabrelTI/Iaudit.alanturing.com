@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: iaudit-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - GOOGLE_DRIVE_CREDENTIALS_PATH=/app/credentials/service-account.json
+    volumes:
+      - ./credentials:/app/credentials:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: iaudit-frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - FRONTEND_URL=${FRONTEND_URL}
+      - DOMAIN_NAME=${DOMAIN_NAME:-iaudit.alanturing.com}
+    depends_on:
+      - backend
+    restart: unless-stopped

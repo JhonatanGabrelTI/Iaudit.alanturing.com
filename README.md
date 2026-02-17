@@ -62,7 +62,14 @@ Acesse:
 - **Dashboard:** http://localhost:8501
 - **API Docs:** http://localhost:8000/docs
 
-### 4. Rodar Localmente (dev)
+### 4. Deploy com Portainer
+
+1. Crie uma nova **Stack** no Portainer.
+2. Copie o conteúdo do arquivo `portainer-stack.yml`.
+3. Defina as variáveis de ambiente no Portainer (ex: `SUPABASE_URL`, `SUPABASE_KEY`).
+4. **Para mudar o domínio:** Adicione a variável `DOMAIN_NAME` com o valor desejado (ex: `meusite.com`).
+
+### 5. Rodar Localmente (dev)
 
 ```bash
 # Backend

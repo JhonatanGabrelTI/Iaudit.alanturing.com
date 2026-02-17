@@ -23,7 +23,7 @@ def generate_self_signed_cert():
         x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"Parana"),
         x509.NameAttribute(NameOID.LOCALITY_NAME, u"Curitiba"),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"IAudit System"),
-        x509.NameAttribute(NameOID.COMMON_NAME, u"iaudit.allanturing.com"),
+        x509.NameAttribute(NameOID.COMMON_NAME, u"iaudit.alanturing.com"),
     ])
     
     cert = x509.CertificateBuilder().subject_name(
@@ -40,7 +40,7 @@ def generate_self_signed_cert():
         # Valid for 10 years
         datetime.datetime.utcnow() + datetime.timedelta(days=3650)
     ).add_extension(
-        x509.SubjectAlternativeName([x509.DNSName(u"iaudit.allanturing.com"), x509.IPAddress(import_ip_address("127.0.0.1"))]),
+        x509.SubjectAlternativeName([x509.DNSName(u"iaudit.alanturing.com"), x509.DNSName(u"localhost"), x509.IPAddress(import_ip_address("127.0.0.1"))]),
         critical=False,
     ).sign(key, hashes.SHA256())
 
