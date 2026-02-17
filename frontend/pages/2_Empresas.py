@@ -188,22 +188,20 @@ with st.sidebar:
 
 # ─── Main Content ────────────────────────────────────────────────────
 
-# Enhanced header with animations
-# Enhanced header with animations
-# Styles are now handled by frontend/assets/style.css
-
+# ─── Header (Standardized) ──────────────────────────────────────────
 st.markdown("""
-<div class="iaudit-header">
-<h1 class="empresas-title">
-Consulta de Empresas
-</h1>
-<p>Busque qualquer CNPJ ou gerencie empresas cadastradas</p>
+<div class="brand-header">
+    <div style="z-index: 1;">
+        <div class="brand-title-large" style="font-size: 2.5rem;">Consulta de Empresas</div>
+        <div class="brand-subtitle-large">Busque qualquer CNPJ ou gerencie empresas cadastradas</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
 # ─── CNPJ Lookup (Main Feature) ──────────────────────────────────────
-st.markdown("### Consultar Qualquer CNPJ")
-st.markdown("<p style='color: #94a3b8; margin-bottom: 1.5rem;'>Digite um CNPJ para consultar informações da Receita Federal</p>", unsafe_allow_html=True)
+st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+st.markdown('<div class="card-title">Consultar Qualquer CNPJ</div>', unsafe_allow_html=True)
+st.markdown('<div class="card-desc">Digite um CNPJ para consultar informações detalhadas da Receita Federal</div>', unsafe_allow_html=True)
 
 
 # ─── Callbacks ───────────────────────────────────────────────────────
@@ -232,7 +230,8 @@ with col_input:
 with col_button:
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    buscar_btn = st.button("Buscar", use_container_width=True, type="primary", on_click=sanitize_cnpj)
+    buscar_btn = st.button("Buscar Agora", use_container_width=True, type="primary", on_click=sanitize_cnpj)
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 if buscar_btn:

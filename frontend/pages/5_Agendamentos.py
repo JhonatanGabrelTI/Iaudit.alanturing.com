@@ -8,11 +8,13 @@ from utils.ui import setup_page
 # Configure page
 setup_page(title="IAudit — Agendamentos", icon=None)
 
-# ─── Header ──────────────────────────────────────────────────────────
+# ─── Header (Standardized) ──────────────────────────────────────────
 st.markdown("""
-<div class="iaudit-header">
-<h1>Automação de Envio</h1>
-<p>Agende consultas automáticas e envio de relatórios</p>
+<div class="brand-header">
+    <div style="z-index: 1;">
+        <div class="brand-title-large" style="font-size: 2.5rem;">Automação de Envio</div>
+        <div class="brand-subtitle-large">Agende consultas automáticas e envio de relatórios</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -20,7 +22,8 @@ st.markdown("""
 c1, c2 = st.columns([1, 1], gap="large")
 
 with c1:
-    st.markdown("### Novo Agendamento")
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">Novo Agendamento</div>', unsafe_allow_html=True)
     
     # ─── QUICK PRESETS ───────────────────────────────────────────────────
     tipo_tarefa = st.radio(
@@ -80,9 +83,11 @@ with c1:
                 }
                 addons.schedule_job(job_data)
                 st.success("Agendado com sucesso!")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with c2:
-    st.markdown("### Próximas Execuções (Cron-Job Sim)")
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">Próximas Execuções</div>', unsafe_allow_html=True)
     
     jobs = addons.get_scheduled_jobs()
     
@@ -111,6 +116,7 @@ with c2:
                 </div>
             </div>
             """, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
             
 st.markdown("---")
 st.caption("O sistema processará as filas automaticamente no horário programado.")

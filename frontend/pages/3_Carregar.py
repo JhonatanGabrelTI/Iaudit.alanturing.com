@@ -25,16 +25,20 @@ def validate_cnpj_frontend(cnpj: str) -> bool:
     return True
 
 
-# ─── Header ──────────────────────────────────────────────────────────
-# ─── Header ──────────────────────────────────────────────────────────
+# ─── Header (Standardized) ──────────────────────────────────────────
 st.markdown("""
-<div class="iaudit-header">
-<h1>Upload de Empresas</h1>
-<p>Cadastro em lote via CSV ou Excel</p>
+<div class="brand-header">
+    <div style="z-index: 1;">
+        <div class="brand-title-large" style="font-size: 2.5rem;">Upload de Empresas</div>
+        <div class="brand-subtitle-large">Cadastro em lote via CSV ou Excel</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ─── Instructions ────────────────────────────────────────────────────
+# ─── Instructions & Tools ──────────────────────────────────────────────
+st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+st.markdown('<div class="card-title">Instruções e Importação</div>', unsafe_allow_html=True)
+
 with st.expander("Formato do Arquivo", expanded=False):
     st.markdown("""
 O arquivo deve conter as seguintes colunas:
@@ -77,6 +81,7 @@ uploaded_file = st.file_uploader(
     type=["csv", "xlsx", "xls"],
     help="Formatos aceitos: CSV, XLSX, XLS",
 )
+st.markdown('</div>', unsafe_allow_html=True)
 
 if uploaded_file:
     # Read file
