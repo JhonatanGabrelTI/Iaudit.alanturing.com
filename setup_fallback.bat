@@ -31,7 +31,7 @@ start nginx.exe
 echo.
 echo ========================================================
 echo   SISTEMA ONLINE (HTTPS AUTO-ASSINADO)
-echo   Acesse: https://iaudit.allanturing.com
+echo   Acesse: https://iaudit.alanturing.com
 echo   NOTA: O navegador vai mostrar "Nao seguro".
 echo   Clique em "Avancado -> Ir para iaudit..." para acessar.
 echo ========================================================

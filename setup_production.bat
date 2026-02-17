@@ -18,8 +18,8 @@ echo Concluido.
 
 echo.
 echo [2/5] Gerando Certificado SSL (Let's Encrypt)...
-echo O Certbot vai solicitar o certificado para iaudit.allanturing.com
-"C:\Program Files\Certbot\bin\certbot.exe" certonly --standalone --non-interactive --agree-tos -m iaudit@allanturing.com -d iaudit.allanturing.com
+echo O Certbot vai solicitar o certificado para iaudit.alanturing.com
+"C:\Program Files\Certbot\bin\certbot.exe" certonly --standalone --non-interactive --agree-tos -m iaudit@alanturing.com -d iaudit.alanturing.com
 
 if %errorlevel% neq 0 (
     echo.
@@ -36,7 +36,7 @@ cd ..
 
 echo.
 echo [4/5] Iniciando Frontend Streamlit (Porta 8501)...
-set BACKEND_URL=https://iaudit.allanturing.com
+set BACKEND_URL=https://iaudit.alanturing.com
 start /B "IAudit Frontend" streamlit run frontend/app.py --server.port 8501 --server.address 127.0.0.1
 
 echo.
@@ -47,6 +47,6 @@ start nginx.exe
 echo.
 echo ========================================================
 echo   SISTEMA ONLINE AGORA EM HTTPS!
-echo   Acesse: https://iaudit.allanturing.com
+echo   Acesse: https://iaudit.alanturing.com
 echo ========================================================
 pause
