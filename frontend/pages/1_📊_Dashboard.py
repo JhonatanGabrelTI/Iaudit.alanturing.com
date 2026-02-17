@@ -84,27 +84,41 @@ def fetch(endpoint: str, params: dict | None = None):
 
 # ─── HERO SECTION ───────────────────────────────────────────────────
 
+# ─── SIDEBAR BRANDING ───────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("""
+    <div class="brand-sidebar">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 7V12C3 17.52 7.03 22 12 22C16.97 22 21 17.52 21 12V7L12 2Z" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 12L11 14L15 10" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="brand-name">IAudit</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ─── HERO SECTION (MEGA BRAND) ──────────────────────────────────────
 st.markdown("""
 <div class="hero-container">
     <div class="hero-accent"></div>
-    <div class="hero-visual">
-        <div class="cube">
-            <div class="face front"></div>
-            <div class="face back"></div>
-            <div class="face right"></div>
-            <div class="face left"></div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-        </div>
+    
+    <div class="brand-container">
+        <!-- SVG Logo -->
+        <svg class="logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="logoGradient" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#60A5FA"/>
+                    <stop offset="100%" stop-color="#A78BFA"/>
+                </linearGradient>
+            </defs>
+            <path d="M12 2L3 7V12C3 17.52 7.03 22 12 22C16.97 22 21 17.52 21 12V7L12 2Z" fill="url(#logoGradient)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            <path d="M9 12L11 14L15 10" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
     </div>
-    <div style="position: relative; z-index: 1;">
-        <h1 class="hero-title">IAudit<br>Intelligence.</h1>
-        <p class="hero-subtitle">
-            Monitoramento fiscal de alta performance.
-            <span style="color: #3b82f6; font-weight: 600;">Tempo Real</span> • 
-            <span style="color: #a855f7; font-weight: 600;">IA Preditiva</span>
-        </p>
-    </div>
+
+    <h1 class="mega-hero-title">IAudit<span style="opacity:0.6; font-weight:300;">Intelligence</span></h1>
+    <p class="mega-hero-subtitle">
+        Monitoramento Fiscal de Alta Performance com IA
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -275,33 +289,73 @@ with c2:
 
 
 
-# ─── ALERTS TABLE ───────────────────────────────────────────────────
-
+# ─── COMPANY STATUS SECTION ──────────────────────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('<h3>📋 Situação das Empresas</h3>', unsafe_allow_html=True)
 
-st.markdown('<h3>🚨 Alertas Recentes</h3>', unsafe_allow_html=True)
+tab1, tab2 = st.tabs(["🚨 Pendências Fiscais", "⏳ Fila de Processamento"])
 
+with tab1:
+    alerts = fetch("/api/dashboard/alerts", {"limite": 50})
+    if alerts:
+        # Custom Glass Table HTML for Alerts
+        table_html = '<table class="iaudit-table"><thead><tr><td class="label">EMPRESA</td><td class="label">CNPJ</td><td class="label">TIPO</td><td class="label">DATA</td><td class="label">STATUS</td></tr></thead><tbody>'
+        
+        for alert in alerts:
+            status_cls = "highlight-error" if alert.get('situacao') in ['negativa', 'irregular'] else "highlight-success"
+            
+            # Format CNPJ
+            cnpj = alert.get('cnpj', '')
+            if len(cnpj) == 14:
+                cnpj = f"{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}"
 
+            table_html += f"""
+            <tr>
+                <td style='font-weight: 600; color: #fff;'>{alert.get('razao_social')}</td>
+                <td style='color: #94a3b8; font-family: monospace;'>{cnpj}</td>
+                <td>{alert.get('tipo', '').upper().replace('_', ' ')}</td>
+                <td>{alert.get('data_execucao', '')[:10]}</td>
+                <td><span class='{status_cls}'>{alert.get('situacao', '').upper()}</span></td>
+            </tr>
+            """
+        table_html += '</tbody></table>'
+        st.markdown(table_html, unsafe_allow_html=True)
+    else:
+        st.info("✅ Nenhuma pendência fiscal crítica encontrada.")
 
-alerts = fetch("/api/dashboard/alerts", {"limite": 5})
+with tab2:
+    upcoming = fetch("/api/dashboard/upcoming", {"limite": 20})
+    if upcoming:
+        # Custom Glass Table HTML for Upcoming
+        table_html = '<table class="iaudit-table"><thead><tr><td class="label">EMPRESA</td><td class="label">CNPJ</td><td class="label">TIPO</td><td class="label">AGENDADO PARA</td></tr></thead><tbody>'
+        
+        for item in upcoming:
+            # Format CNPJ
+            cnpj = item.get('cnpj', '')
+            if len(cnpj) == 14:
+                cnpj = f"{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}"
 
-if alerts:
+            # Format Date
+            data_agendada = item.get('data_agendada', '')
+            try:
+                dt = data_agendada.split('T')[0]
+                hr = data_agendada.split('T')[1][:5]
+                data_fmt = f"{dt}	🕒 {hr}"
+            except:
+                data_fmt = data_agendada
 
-    # Custom Glass Table HTML
-
-    table_html = '<table class="iaudit-table"><thead><tr><td class="label">EMPRESA</td><td class="label">TIPO</td><td class="label">DATA</td><td class="label">STATUS</td></tr></thead><tbody>'
-
-    
-
-    for alert in alerts:
-
-        status_cls = "highlight-error" if alert['situacao'] in ['negativa', 'irregular'] else "highlight-success"
-
-        table_html += f"<tr><td style='font-weight: 600; color: #fff;'>{alert.get('razao_social')}</td><td>{alert.get('tipo', '').upper()}</td><td>{alert.get('data_execucao', '')[:10]}</td><td><span class='{status_cls}'>{alert.get('situacao', '').upper()}</span></td></tr>"
-
-    table_html += '</tbody></table>'
-
-    st.markdown(table_html, unsafe_allow_html=True)
+            table_html += f"""
+            <tr>
+                <td style='font-weight: 600; color: #fff;'>{item.get('razao_social')}</td>
+                <td style='color: #94a3b8; font-family: monospace;'>{cnpj}</td>
+                <td>{item.get('tipo', '').upper().replace('_', ' ')}</td>
+                <td style='color: #60a5fa;'>{data_fmt}</td>
+            </tr>
+            """
+        table_html += '</tbody></table>'
+        st.markdown(table_html, unsafe_allow_html=True)
+    else:
+        st.info("💤 Nenhuma consulta agendada para breve.")
 
 
 
