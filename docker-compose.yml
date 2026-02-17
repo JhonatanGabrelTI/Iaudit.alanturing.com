@@ -19,7 +19,7 @@ services:
       restart_policy:
         condition: on-failure
 
-  frontend:
+ context: ./front-end
     image: laudit-frontend:latest
     build:
       context: ./front-end
