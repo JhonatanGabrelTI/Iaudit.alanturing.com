@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": "c1ebaa53-0079-4e26-be6d-51178ce54084",
+    "timestamp": "2026-02-19T13:35:24.019481",
+    "channel": "email",
+    "recipient": "financeiro@alpha.com",
+    "subject": "Fatura Dispon\u00edvel - iAudit",
+    "content": "Template: emitido",
+    "status": "failed",
+    "error_message": null,
+    "metadata": {}
+  }
+]

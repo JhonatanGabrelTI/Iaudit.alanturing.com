@@ -105,11 +105,11 @@ class BillingService:
                         "dataVencimento": target_due_date.strftime("%Y-%m-%d"),
                         "pagador_nome": empresa.get("razao_social"),
                         "pagador_documento": empresa.get("cnpj"),
-                        "pagador_endereco": "Endereco Cadastrado", # Should extend empresa model
-                        "pagador_cep": "00000000",
-                        "pagador_uf": "PR",
-                        "pagador_cidade": "Curitiba",
-                        "pagador_bairro": "Centro"
+                        "pagador_endereco": f"{empresa.get('logradouro', '')}, {empresa.get('numero', '')} {empresa.get('complemento', '')}".strip(),
+                        "pagador_cep": empresa.get("cep", "00000000"),
+                        "pagador_uf": empresa.get("uf", "PR"),
+                        "pagador_cidade": empresa.get("municipio", "Curitiba"),
+                        "pagador_bairro": empresa.get("bairro", "Centro")
                     }
                     
                     # 2. Call Bradesco Service

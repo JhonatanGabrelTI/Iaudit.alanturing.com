@@ -28,7 +28,7 @@ def run_robot(bot_name: str, cnpj: str):
         st.error(f"Erro ao disparar robô: {e}")
 
 # Add parent dir to path for utils import
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from utils.certificate_generator import generate_fgts_certificate
 
 from utils.ui import setup_page
@@ -326,20 +326,41 @@ if 'dados_empresa' in st.session_state:
         st.markdown("---")
         col_pdf1, col_pdf2, col_pdf3 = st.columns([1, 2, 1])
         with col_pdf2:
-            try:
-                from utils.pdf_generator import generate_company_pdf
-                pdf_buffer = generate_company_pdf(result)
-                
-                st.download_button(
-                    label="Baixar Relatório PDF (Gerado Localmente)",
-                    data=pdf_buffer,
-                    file_name=f"Relatorio_{cnpj_clean}.pdf",
-                    mime="application/pdf",
-                    use_container_width=True,
-                    key=f"btn_pdf_{cnpj_clean}"
-                )
-            except Exception as e:
-                st.error(f"Erro ao gerar PDF: {e}")
+            c_btn1, c_btn2 = st.columns(2)
+            with c_btn1:
+                try:
+                    from utils.pdf_generator import generate_company_pdf
+                    pdf_buffer = generate_company_pdf(result)
+                    
+                    st.download_button(
+                        label="Baixar PDF",
+                        data=pdf_buffer,
+                        file_name=f"Relatorio_{cnpj_clean}.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                        key=f"btn_pdf_{cnpj_clean}"
+                    )
+                except Exception as e:
+                    st.error(f"Erro PDF: {e}")
+            
+            with c_btn2:
+                if st.button("Cadastrar no Sistema", use_container_width=True, type="primary"):
+                    # Prepare data for pre-fill
+                    st.session_state["form_data"] = {
+                        "cnpj": result.get("cnpj", ""),
+                        "razao_social": result.get("razao_social", ""),
+                        "email": result.get("email", ""),
+                        "telefone": result.get("telefone", ""),
+                        "logradouro": result.get("logradouro", ""),
+                        "numero": result.get("numero", ""),
+                        "complemento": result.get("complemento", ""),
+                        "bairro": result.get("bairro", ""),
+                        "municipio": result.get("municipio", ""),
+                        "uf": result.get("uf", ""),
+                        "cep": result.get("cep", "")
+                    }
+                    st.session_state.show_add_form = True
+                    st.rerun()
 
         # Official Links
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1029,26 +1050,53 @@ with col_f3:
 
 # ─── Add Empresa Form ────────────────────────────────────────────────
 if st.session_state.get("show_add_form"):
+    # Get pre-fill data if available
+    pre_fill = st.session_state.get("form_data", {})
+    
     with st.expander("Cadastrar Nova Empresa", expanded=True):
         with st.form("add_empresa"):
+            st.markdown("**Dados Principais**")
             c1, c2 = st.columns(2)
             with c1:
-                cnpj_cad = st.text_input("CNPJ *", placeholder="Apenas números")
-                razao_cad = st.text_input("Razão Social *")
-                ie_cad = st.text_input("Inscrição Estadual PR")
+                cnpj_cad = st.text_input("CNPJ *", value=pre_fill.get("cnpj", ""), placeholder="Apenas números")
+                razao_cad = st.text_input("Razão Social *", value=pre_fill.get("razao_social", ""))
+                ie_cad = st.text_input("Inscrição Estadual PR", value=pre_fill.get("inscricao_estadual_pr", ""))
             with c2:
-                email_cad = st.text_input("Email para Notificação")
-                whatsapp_cad = st.text_input("WhatsApp")
+                email_cad = st.text_input("Email para Notificação", value=pre_fill.get("email", ""))
+                whatsapp_cad = st.text_input("WhatsApp", value=pre_fill.get("telefone", "")) # Fallback to phone if no whatsapp specific
+            
+            st.markdown("**Endereço**")
+            e1, e2, e3 = st.columns([1, 2, 1])
+            with e1:
+                cep_cad = st.text_input("CEP", value=pre_fill.get("cep", ""))
+            with e2:
+                logradouro_cad = st.text_input("Logradouro", value=pre_fill.get("logradouro", ""))
+            with e3:
+                numero_cad = st.text_input("Número", value=pre_fill.get("numero", ""))
+            
+            e4, e5, e6 = st.columns([1, 1, 1])
+            with e4:
+                complemento_cad = st.text_input("Complemento", value=pre_fill.get("complemento", ""))
+            with e5:
+                bairro_cad = st.text_input("Bairro", value=pre_fill.get("bairro", ""))
+            with e6:
+                cidade_cad = st.text_input("Cidade", value=pre_fill.get("municipio", ""))
+                uf_cad = st.text_input("UF", value=pre_fill.get("uf", ""))
+
+            st.markdown("**Configuração de Notificação**")
+            n1, n2 = st.columns(2)
+            with n1:
                 period_cad = st.selectbox(
                     "Periodicidade",
                     ["diario", "semanal", "quinzenal", "mensal"],
                     index=3,
                 )
-            c3, c4 = st.columns(2)
-            with c3:
-                horario_cad = st.time_input("Horário", value=None)
-                horario_str_cad = horario_cad.strftime("%H:%M:%S") if horario_cad else "08:00:00"
-            with c4:
+            with n2:
+                 horario_cad = st.time_input("Horário", value=None)
+                 horario_str_cad = horario_cad.strftime("%H:%M:%S") if horario_cad else "08:00:00"
+            
+            n3, n4 = st.columns(2)
+            with n3:
                 if period_cad == "semanal":
                     dia_semana_cad = st.selectbox(
                         "Dia da Semana",
@@ -1074,6 +1122,13 @@ if st.session_state.get("show_add_form"):
                         "inscricao_estadual_pr": ie_cad or None,
                         "email_notificacao": email_cad or None,
                         "whatsapp": whatsapp_cad or None,
+                        "logradouro": logradouro_cad,
+                        "numero": numero_cad,
+                        "complemento": complemento_cad,
+                        "bairro": bairro_cad,
+                        "municipio": cidade_cad,
+                        "uf": uf_cad,
+                        "cep": cep_cad,
                         "periodicidade": period_cad,
                         "horario": horario_str_cad,
                         "dia_semana": dia_semana_cad,
@@ -1085,6 +1140,9 @@ if st.session_state.get("show_add_form"):
                         if result_save:
                             st.success(f"Empresa {razao_cad} cadastrada com sucesso!")
                             st.session_state.show_add_form = False
+                            # Clear pre-fill data
+                            if "form_data" in st.session_state:
+                                del st.session_state["form_data"]
                             st.rerun()
 
 # ─── Empresas Table ──────────────────────────────────────────────────

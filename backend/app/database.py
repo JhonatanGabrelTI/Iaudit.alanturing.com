@@ -155,6 +155,13 @@ def create_empresa(data: dict) -> dict:
             "dia_semana": data.get("dia_semana"),
             "dia_mes": data.get("dia_mes"),
             "horario": data.get("horario", "08:00:00"),
+            "logradouro": data.get("logradouro"),
+            "numero": data.get("numero"),
+            "complemento": data.get("complemento"),
+            "bairro": data.get("bairro"),
+            "municipio": data.get("municipio"),
+            "uf": data.get("uf"),
+            "cep": data.get("cep"),
             "ativo": True,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat(),
@@ -524,6 +531,16 @@ def get_boletos_ativos() -> list[dict]:
         .execute()
         .data
     )
+
+def get_boletos_by_empresa(empresa_id: str) -> list[dict]:
+    """Get all boletos for a specific company."""
+    if DEMO_MODE:
+        return [b for b in DEMO_BOLETOS if b.get("empresa_id") == empresa_id]
+
+    sb = get_supabase()
+    if sb is None: return get_boletos_by_empresa(empresa_id)
+
+    return sb.table("boletos").select("*").eq("empresa_id", empresa_id).execute().data
 
 def update_boleto_status(boleto_id: str, status: str, extra_data: dict = None) -> dict:
     """Update boleto status."""
