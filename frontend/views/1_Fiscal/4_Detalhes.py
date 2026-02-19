@@ -97,7 +97,7 @@ if pre_selected:
 
 # Add a "Back" button for better UX
 if st.button("Voltar para Lista"):
-    st.switch_page("pages/2_Empresas.py")
+    st.switch_page("views/1_Fiscal/2_Empresas.py")
 
 selected = st.selectbox(
     "Selecione a Empresa",

@@ -49,6 +49,8 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 # ─── Initialize Session State ────────────────────────────────────────
 if 'search_history' not in st.session_state:
     st.session_state['search_history'] = []
+if 'cnpj_input_widget' not in st.session_state:
+    st.session_state['cnpj_input_widget'] = ""
 
 def add_to_history(data):
     """Add a search result to history if not already present."""
@@ -165,24 +167,48 @@ def delete(endpoint: str):
         return False
 
 
+def sync_history():
+    """Fetch history from backend to populate session state."""
+    hist = fetch("/api/query/history")
+    if hist is not None:
+        st.session_state['search_history'] = hist
+
+def update_history_backend(data):
+    """Notify backend about a new search (though handled automatically by GET /cnpj)."""
+    # This is optional now as GET /cnpj already saves, but good for manual entries
+    post("/api/query/history", data)
+
 # ─── Sidebar History ─────────────────────────────────────────────────
+if not st.session_state['search_history']:
+    sync_history()
+
 with st.sidebar:
-    st.header("Histórico Recente")
+    st.markdown('<div class="card-title" style="font-size: 1.2rem; margin-bottom: 1rem;">Histórico Recente</div>', unsafe_allow_html=True)
+    
     if not st.session_state['search_history']:
         st.info("Nenhuma busca recente.")
     else:
         for item in st.session_state['search_history']:
-            with st.container():
-                st.write(f"**{item['razao_social']}**")
-                st.caption(f"CNPJ: {item['cnpj']} • {item['timestamp']}")
-                if st.button("📂 Abrir", key=f"hist_{item['cnpj']}", use_container_width=True):
-                    load_from_history(item)
-                    st.rerun()
-                st.markdown("---")
-    
-    st.markdown("### Opções")
-    if st.button("Limpar Histórico"):
+            # Unique key for each history item container/button
+            cnpj_item = item['cnpj']
+            
+            st.markdown(f"""
+            <div class="glass-card" style="padding: 0.8rem; margin-bottom: 0.5rem; border-left: 3px solid #6366f1;">
+                <div style="font-weight: 600; font-size: 0.85rem; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{item['razao_social']}</div>
+                <div style="font-size: 0.75rem; color: #94a3b8;">{fmt_cnpj(cnpj_item)} • {item.get('timestamp', '')}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button("Visualizar", key=f"hist_btn_{cnpj_item}", use_container_width=True):
+                # Update data and sync input widget directly
+                st.session_state['dados_empresa'] = item['data']
+                st.session_state['cnpj_input_widget'] = cnpj_item
+                st.rerun()
+                
+    st.markdown("---")
+    if st.button("Limpar Histórico", use_container_width=True):
         st.session_state['search_history'] = []
+        # Optional: Add backend endpoint to clear history if needed
         st.rerun()
 
 
@@ -217,11 +243,8 @@ def sanitize_cnpj():
 col_input, col_button = st.columns([4, 1])
 
 with col_input:
-    # Use session state for input value if available
-    default_cnpj = st.session_state.get('cnpj_input', '')
     cnpj_busca = st.text_input(
         "Digite o CNPJ", 
-        value=default_cnpj,
         placeholder="00.000.000/0000-00 ou apenas números",
         label_visibility="collapsed",
         key="cnpj_input_widget"
@@ -1145,7 +1168,7 @@ if empresas:
         with col_a3:
             if st.button("Ver Detalhes"):
                 st.session_state.detail_empresa_id = emp_id
-                st.switch_page("pages/4_🔍_Detalhes.py")
+                st.switch_page("views/1_Fiscal/4_Detalhes.py")
 
         with col_a4:
             if st.button("Remover", type="primary"):

@@ -13,8 +13,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routes import empresas, consultas, dashboard, query, pdf
+from app.routes import empresas, consultas, dashboard, query, pdf, cobrancas, comunicacoes
 from app.services.scheduler import process_pending_queries, create_daily_schedules
+from app.services.monitoring import monitor_boletos
+from app.services.billing import billing_service
 
 # ─── Logging ─────────────────────────────────────────────────────────
 
@@ -62,6 +64,24 @@ async def lifespan(app: FastAPI):
         f"daily at {settings.scheduler_daily_hour:02d}:{settings.scheduler_daily_minute:02d}"
     )
 
+    # Job 3: Monitor Boletos Status (Daily or Hourly)
+    scheduler.add_job(
+        monitor_boletos,
+        trigger=IntervalTrigger(minutes=60),
+        id="monitor_boletos",
+        name="Monitor Boletos Status",
+        replace_existing=True,
+    )
+
+    # Job 4: Process Recurring Billing (Daily at 06:00)
+    scheduler.add_job(
+        billing_service.process_recurring_billing,
+        trigger=CronTrigger(hour=6, minute=0),
+        id="recurring_billing",
+        name="Process Recurring Billing",
+        replace_existing=True,
+    )
+
     yield
 
     # Shutdown
@@ -93,6 +113,8 @@ app.include_router(consultas.router)
 app.include_router(dashboard.router)
 app.include_router(query.router, prefix="/api/query", tags=["query"])
 app.include_router(pdf.router, prefix="/api/pdf", tags=["pdf"])
+app.include_router(cobrancas.router, prefix="/api/cobranca", tags=["cobranca"])
+app.include_router(comunicacoes.router)
 
 
 @app.get("/", tags=["Health"])

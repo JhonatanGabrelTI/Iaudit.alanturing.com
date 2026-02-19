@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 import uuid
-from typing import Any
+from typing import Any, List, Dict, Optional
 
 from supabase import create_client, Client
 
@@ -28,30 +28,35 @@ def load_db():
         try:
             with open(DB_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return data.get("empresas", []), data.get("consultas", [])
+                return data.get("empresas", []), data.get("consultas", []), data.get("boletos", []), data.get("billing_plans", [])
         except Exception as e:
             logger.error(f"Failed to load local DB: {e}")
-    return [], []
+    return [], [], [], []
 
 def save_db():
     try:
         with open(DB_FILE, "w", encoding="utf-8") as f:
             json.dump({
                 "empresas": DEMO_EMPRESAS,
-                "consultas": DEMO_CONSULTAS
+                "consultas": DEMO_CONSULTAS,
+                "boletos": DEMO_BOLETOS,
+                "billing_plans": DEMO_BILLING_PLANS
             }, f, indent=2, default=str)
     except Exception as e:
         logger.error(f"Failed to save local DB: {e}")
 
 # Initialize from file
-DEMO_EMPRESAS, DEMO_CONSULTAS = load_db()
+DEMO_EMPRESAS, DEMO_CONSULTAS, DEMO_BOLETOS, DEMO_BILLING_PLANS = load_db()
 
 # If empty, we start fresh (User requested "No More Fake Data")
 if not DEMO_EMPRESAS:
     DEMO_EMPRESAS = []
 if not DEMO_CONSULTAS:
     DEMO_CONSULTAS = []
-
+if not DEMO_BOLETOS:
+    DEMO_BOLETOS = []
+if not DEMO_BILLING_PLANS:
+    DEMO_BILLING_PLANS = []
 
 def get_supabase() -> Client | None:
     """Get or create the Supabase client singleton."""
@@ -203,9 +208,12 @@ def delete_empresa(empresa_id: str) -> None:
 def clear_all_empresas() -> None:
     """Hard-delete ALL empresas and associated data."""
     if DEMO_MODE:
-        global DEMO_EMPRESAS, DEMO_CONSULTAS
+        global DEMO_EMPRESAS, DEMO_CONSULTAS, DEMO_BOLETOS
         DEMO_EMPRESAS = []
         DEMO_CONSULTAS = []
+        DEMO_CONSULTAS = []
+        DEMO_BOLETOS = []
+        DEMO_BILLING_PLANS = []
         save_db()
         return
 
@@ -478,7 +486,7 @@ def rpc_proximas_consultas(limite: int = 10) -> list[dict]:
 def rpc_alertas_ativos(limite: int = 20) -> list[dict]:
     """Call the alertas_ativos Supabase function."""
     if DEMO_MODE:
-        from datetime import datetime, timedelta
+        from datetime import timedelta
         demos = [
             {
                 "consulta_id": "c1", "cnpj": "09.157.307/0001-75", 
@@ -493,3 +501,116 @@ def rpc_alertas_ativos(limite: int = 20) -> list[dict]:
     if sb is None: return rpc_alertas_ativos(limite)
 
     return sb.rpc("alertas_ativos", {"limite": limite}).execute().data
+
+# ─── Boletos ─────────────────────────────────────────────────────────
+
+def get_boletos_ativos() -> list[dict]:
+    """Get all active boletos (emitidos ou atrasados)."""
+    if DEMO_MODE:
+        return [b for b in DEMO_BOLETOS if b.get("status") in ("emitido", "atraso")]
+    
+    sb = get_supabase()
+    if sb is None: return get_boletos_ativos()
+    
+    # We need to join with empresa to get email/whatsapp for notifications
+    # This assumes a VIEW or foreign key relationship is set up correctly in Supabase
+    # If not, we might need two queries or a robust join.
+    # Assuming 'boletos' table exists and has 'empresa_id'
+    
+    return (
+        sb.table("boletos")
+        .select("*, empresas(razao_social, email_notificacao, whatsapp)")
+        .in_("status", ["emitido", "atraso"])
+        .execute()
+        .data
+    )
+
+def update_boleto_status(boleto_id: str, status: str, extra_data: dict = None) -> dict:
+    """Update boleto status."""
+    update_payload = {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}
+    if extra_data:
+        # Merge extra data into a 'bradesco_metadata' column if it exists, or just specific fields
+        # For simple storage, let's assume we update metadata if column exists
+        pass 
+    if DEMO_MODE:
+        for i, b in enumerate(DEMO_BOLETOS):
+            if b["id"] == boleto_id:
+                updated = {**b, **update_payload}
+                DEMO_BOLETOS[i] = updated
+                save_db()
+                return updated
+        return {}
+
+    sb = get_supabase()
+    if sb is None: return update_boleto_status(boleto_id, status, extra_data)
+
+    return sb.table("boletos").update(update_payload).eq("id", boleto_id).execute().data[0]
+
+
+# ─── Billing Plans ───────────────────────────────────────────────────
+
+def get_billing_plans(empresa_id: str = None) -> list[dict]:
+    """Get billing plans, optionally filtered by empresa."""
+    if DEMO_MODE:
+        if empresa_id:
+            return [p for p in DEMO_BILLING_PLANS if p["empresa_id"] == empresa_id and p.get("ativo", True)]
+        return [p for p in DEMO_BILLING_PLANS if p.get("ativo", True)]
+    
+    sb = get_supabase()
+    if sb is None: return get_billing_plans(empresa_id)
+
+    query = sb.table("billing_plans").select("*").eq("ativo", True)
+    if empresa_id:
+        query = query.eq("empresa_id", empresa_id)
+    return query.execute().data
+
+def create_billing_plan(data: dict) -> dict:
+    """Create a new billing plan."""
+    if DEMO_MODE:
+        import uuid
+        plan = {
+            "id": str(uuid.uuid4()),
+            "ativo": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            **data
+        }
+        DEMO_BILLING_PLANS.append(plan)
+        save_db()
+        return plan
+    
+    sb = get_supabase()
+    if sb is None: return create_billing_plan(data)
+    
+    return sb.table("billing_plans").insert(data).execute().data[0]
+
+def delete_billing_plan(plan_id: str) -> None:
+    """Soft delete a billing plan."""
+    if DEMO_MODE:
+        for i, p in enumerate(DEMO_BILLING_PLANS):
+            if p["id"] == plan_id:
+                p["ativo"] = False
+                save_db()
+                return
+        return
+
+    sb = get_supabase()
+    if sb is None: return delete_billing_plan(plan_id)
+    
+    sb.table("billing_plans").update({"ativo": False}).eq("id", plan_id).execute()
+
+def update_billing_plan(plan_id: str, data: dict) -> dict:
+    """Update a billing plan."""
+    if DEMO_MODE:
+        for i, p in enumerate(DEMO_BILLING_PLANS):
+            if p["id"] == plan_id:
+                updated = {**p, **data}
+                DEMO_BILLING_PLANS[i] = updated
+                save_db()
+                return updated
+        return {}
+
+    sb = get_supabase()
+    if sb is None: return update_billing_plan(plan_id, data)
+    
+    return sb.table("billing_plans").update(data).eq("id", plan_id).execute().data[0]
+

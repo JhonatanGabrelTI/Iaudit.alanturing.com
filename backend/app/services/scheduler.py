@@ -18,6 +18,7 @@ from app.database import (
 from app.services.infosimples import infosimples_client
 from app.services.drive import drive_service
 from app.services.notifications import send_alert_email
+from app.services.settings import dynamic_settings
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +138,10 @@ async def process_pending_queries():
     Runs every 5 minutes via APScheduler.
     """
     logger.info("=== Job: Process Pending Queries ===")
+    
+    if not dynamic_settings.is_robo_ativo():
+        logger.info("Robot is INACTIVE. Skipping process_pending_queries.")
+        return
 
     try:
         # Get pending consultas (agendada + due)
@@ -164,6 +169,10 @@ def create_daily_schedules():
     Creates consultas based on each empresa's periodicidade settings.
     """
     logger.info("=== Job: Create Daily Schedules ===")
+
+    if not dynamic_settings.is_robo_ativo():
+        logger.info("Robot is INACTIVE. Skipping create_daily_schedules.")
+        return
 
     try:
         empresas = get_empresas_ativas()

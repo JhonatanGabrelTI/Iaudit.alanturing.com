@@ -13,3 +13,4 @@ google-auth==2.37.0
 resend==2.5.1
 python-dotenv==1.0.1
 reportlab==4.0.9
+twilio==9.0.0

@@ -210,7 +210,7 @@ if uploaded_file:
                     except Exception as e:
                         st.error(f"Erro inesperado: {e}")
 
-                        st.error(f"❌ Erro inesperado: {e}")
+                st.error(f"Erro inesperado: {e}")
 
     except Exception as e:
         st.error(f"Erro ao ler arquivo: {e}")

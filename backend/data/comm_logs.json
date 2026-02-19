@@ -1,0 +1,46 @@
+[
+  {
+    "id": "0cb8827f-4bb1-4a5b-8973-f584c2e0ad3c",
+    "timestamp": "2026-02-19T09:36:56.557822",
+    "channel": "email",
+    "recipient": "test@example.com",
+    "subject": "ALERTA: Fatura em Atraso - iAudit",
+    "content": "Template: atraso",
+    "status": "failed",
+    "error_message": null,
+    "metadata": {}
+  },
+  {
+    "id": "2bf2eb1a-3348-4cc9-bcd8-57c3b5a0c916",
+    "timestamp": "2026-02-19T09:36:56.542650",
+    "channel": "email",
+    "recipient": "test@example.com",
+    "subject": "Confirma\u00e7\u00e3o de Pagamento - iAudit",
+    "content": "Template: pago",
+    "status": "failed",
+    "error_message": null,
+    "metadata": {}
+  },
+  {
+    "id": "0e674dc0-fd8b-432b-98df-8b98a3d3fee4",
+    "timestamp": "2026-02-19T09:36:56.530142",
+    "channel": "email",
+    "recipient": "test@example.com",
+    "subject": "Fatura Dispon\u00edvel - iAudit",
+    "content": "Template: emitido",
+    "status": "failed",
+    "error_message": null,
+    "metadata": {}
+  },
+  {
+    "id": "fb1e3c4f-e781-4b08-80bb-f6a1aef4e906",
+    "timestamp": "2026-02-19T09:36:25.255928",
+    "channel": "email",
+    "recipient": "test@example.com",
+    "subject": "Fatura Dispon\u00edvel - iAudit",
+    "content": "Template: emitido",
+    "status": "failed",
+    "error_message": null,
+    "metadata": {}
+  }
+]

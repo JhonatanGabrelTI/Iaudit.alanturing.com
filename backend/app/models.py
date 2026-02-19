@@ -39,6 +39,25 @@ class Situacao(str, Enum):
     erro = "erro"
 
 
+class StatusBoleto(str, Enum):
+    emitido = "emitido"
+    pago = "pago"
+    vencido = "vencido"
+    baixado = "baixado"
+    erro = "erro"
+
+
+class CommunicationChannel(str, Enum):
+    email = "email"
+    whatsapp = "whatsapp"
+
+
+class CommunicationStatus(str, Enum):
+    pending = "pending"
+    sent = "sent"
+    failed = "failed"
+
+
 # ─── Empresa ─────────────────────────────────────────────────────────
 
 class EmpresaCreate(BaseModel):
@@ -158,3 +177,45 @@ class ForceQueryRequest(BaseModel):
             TipoConsulta.cnd_pr,
         ]
     )
+
+
+# ─── Cobrança Bradesco ──────────────────────────────────────────────
+
+class BoletoCreate(BaseModel):
+    empresa_id: str
+    nuFatura: str
+    vlNominal: int  # em centavos
+    dataVencimento: date
+    pagador_nome: str
+    pagador_documento: str
+    pagador_endereco: str
+    pagador_cep: str
+    pagador_uf: str
+    pagador_cidade: str
+    pagador_bairro: str
+
+
+class BoletoResponse(BaseModel):
+    id: str
+    nossoNumero: str | None = None
+    linhaDigitavel: str | None = None
+    codigoBarras: str | None = None
+    status: StatusBoleto
+    vlNominal: int
+    dataVencimento: date
+    pdf_url: str | None = None
+    created_at: datetime
+
+
+# ─── Comunicação ──────────────────────────────────────────────────
+
+class CommunicationLog(BaseModel):
+    id: str | None = None
+    timestamp: datetime = Field(default_factory=datetime.now)
+    channel: CommunicationChannel
+    recipient: str
+    subject: str | None = None
+    content: str
+    status: CommunicationStatus = CommunicationStatus.pending
+    error_message: str | None = None
+    metadata: dict[str, Any] | None = None

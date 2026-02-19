@@ -1,0 +1,11 @@
+{
+  "robo_ativo": true,
+  "mensagens_ativas": true,
+  "notificar_erro": true,
+  "notificar_sucesso": false,
+  "whatsapp_provider": "Evolution API",
+  "gmail_method": "SMTP Fallback",
+  "template_wa_cobranca": "iAudit: Seu boleto vence em {vencimento}. Valor: R$ {valor}. Linha: {linha}",
+  "template_wa_atraso": "iAudit: Constatamos que seu boleto venceu em {vencimento}. Regularize para evitar protesto.",
+  "template_wa_alerta": "\ud83d\udea8 IAudit Alerta: Empresa {empresa} possui pend\u00eancia {tipo}. Situa\u00e7\u00e3o: {situacao}."
+}

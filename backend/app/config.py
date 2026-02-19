@@ -23,6 +23,11 @@ class Settings(BaseSettings):
         "", description="Root folder ID in Google Drive"
     )
 
+    # Twilio (WhatsApp)
+    twilio_account_sid: str = Field("", description="Twilio Account SID")
+    twilio_auth_token: str = Field("", description="Twilio Auth Token")
+    twilio_from_number: str = Field("", description="Twilio WhatsApp From Number (e.g., whatsapp:+14155238886)")
+
     # Email - Resend
     resend_api_key: str = Field("", description="Resend API key")
     email_from: str = Field(
@@ -51,6 +56,15 @@ class Settings(BaseSettings):
     rate_limit_seconds: int = Field(3)
     max_retries: int = Field(3)
     retry_interval_minutes: int = Field(5)
+
+    # Bradesco API
+    bradesco_client_id: str = Field("", description="Bradesco API Client ID")
+    bradesco_client_secret: str = Field("", description="Bradesco API Client Secret")
+    bradesco_certificate_path: str = Field("", description="Path to Bradesco TLS certificate (.pem)")
+    bradesco_private_key_path: str = Field("", description="Path to Bradesco private key (.key)")
+    bradesco_negociacao: str = Field("", description="Format: AAAA0000000CCCCCCC")
+    bradesco_acess_esc10: str = Field("4912110", description="Acessório Escritural 10 (Fixed: 4912110)")
+    bradesco_sandbox: bool = Field(True, description="Use Bradesco Sandbox environment")
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

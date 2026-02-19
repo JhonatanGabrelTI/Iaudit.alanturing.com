@@ -199,6 +199,19 @@ async def query_cnpj(cnpj: str) -> dict:
     }
 
 
+from app.services.history import load_history, save_to_history
+
+@router.get("/history")
+async def get_history():
+    """Retrieve search history."""
+    return load_history()
+
+@router.post("/history")
+async def add_history(data: dict):
+    """Manually add to history."""
+    save_to_history(data)
+    return {"status": "ok"}
+
 @router.get("/cnpj/{cnpj}")
 async def get_cnpj(cnpj: str):
     """Query CNPJ endpoint - returns company data + certification statuses."""
@@ -210,6 +223,8 @@ async def get_cnpj(cnpj: str):
 
     try:
         result = await query_cnpj(cnpj_clean)
+        # Save to history automatically
+        save_to_history(result)
         return result
     except HTTPException:
         raise
